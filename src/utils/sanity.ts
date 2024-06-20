@@ -31,7 +31,7 @@ export async function getProducts(params: ProductFilterParams) {
     // Adding category filter
     if (category.length > 0) {
       const formattedCategories = category.map(cat => `"${cat}"`).join(', ');
-      query += ` && category in [${formattedCategories}]`;
+      query += ` && category._ref in *[_type == "category" && title in [${formattedCategories}]]._id`;
     }
 
     // Adding price range filter
@@ -44,7 +44,15 @@ export async function getProducts(params: ProductFilterParams) {
     }
 
     // Finalizing the query
-    query += `]{ price, category, 'imageUrl': mainImage.asset->url, name }`;
+    query += `]{
+      price,
+      category->{
+        title,
+        slug
+      },
+      "imageUrl": mainImage.asset->url,
+      name
+    }`;
 
     // Fetching products using Sanity client
     const products = await client.fetch(query);

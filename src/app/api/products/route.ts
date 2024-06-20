@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const params = {
-      category: url.searchParams.getAll('category'),
+      category: url.searchParams.getAll('categories'), // Changed 'category' to 'categories'
       minPrice: parseQueryParamToInt(url.searchParams.get('minPrice')),
       maxPrice: parseQueryParamToInt(url.searchParams.get('maxPrice')),
     };

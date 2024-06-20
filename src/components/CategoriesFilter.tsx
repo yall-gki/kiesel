@@ -7,27 +7,29 @@ import useFilterStore from '../store/useFilterStore';
 
 interface Category {
   title: string;
+  slug: { current: string };
 }
 
-const CategoriesFilter: React.FC = () => {
+const CategoriesFilter = () => {
+  const selectedCategories = useFilterStore((state) => state.categories);
+  const setCategories = useFilterStore((state) => state.setCategories);
+  const slug = useFilterStore((state) => state.slug);
+
   const { data: categories, isLoading, isError } = useQuery<Category[], Error>({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
-
-  const selectedCategories = useFilterStore((state) => state.categories);
-  const setCategories = useFilterStore((state) => state.setCategories);
 
   async function fetchCategories(): Promise<Category[]> {
     const { data } = await axios.get('/api/categories');
     return data;
   }
 
-  const handleCategoryChange = (category: string) => {
-    const newCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((c) => c !== category)
-      : [...selectedCategories, category];
-    setCategories(newCategories);
+  const handleCategoryChange = (categorySlug: string) => {
+    const updatedCategories = selectedCategories.includes(categorySlug)
+      ? selectedCategories.filter((c) => c !== categorySlug)
+      : [...selectedCategories, categorySlug];
+    setCategories(updatedCategories);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -41,9 +43,9 @@ const CategoriesFilter: React.FC = () => {
             className="h-4 w-full scale-150"
             type="checkbox"
             name="category"
-            value={category.title}
-            checked={selectedCategories.includes(category.title.toUpperCase())}
-            onChange={() => handleCategoryChange(category.title.toUpperCase())}
+            value={category.slug.current}
+            checked={selectedCategories.map(c => c.toLowerCase()).includes(category.slug.current.toLowerCase())}
+            onChange={() => handleCategoryChange(category.slug.current.toLowerCase())}
           />
           <span className="text-zinc-800 font-semibold">{category.title}</span>
         </div>

@@ -7,10 +7,11 @@ import CategoriesFilter from './CategoriesFilter';
 import PriceFilter from './PriceFilter';
 import useFilterStore from '../store/useFilterStore';
 
-const ProductFilter: React.FC = () => {
+const ProductFilter= () => {
   const categories = useFilterStore((state) => state.categories);
   const priceRange = useFilterStore((state) => state.priceRange);
   const setProducts = useFilterStore((state) => state.setProducts);
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,7 +40,7 @@ const ProductFilter: React.FC = () => {
       <h2 className="text-2xl w-full font-semibold">FILTERS</h2>
       <hr className="w-full h-[2px] bg-slate-400 pr-8" />
       <form className="w-full lg:h-full flex flex-col items-start justify-start" onSubmit={handleSubmit}>
-        <CategoriesFilter />
+        <CategoriesFilter  />
         <PriceFilter />
         <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">
           Apply Filters
