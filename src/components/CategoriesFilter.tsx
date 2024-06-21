@@ -1,14 +1,21 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import useFilterStore from '../store/useFilterStore';
 
 interface Category {
   title: string;
   slug: { current: string };
 }
+
+const fetchCategories = async (): Promise<Category[]> => {
+  const { data } = await axios.get('/api/categories');
+  return data;
+};
+  
 
 const CategoriesFilter = () => {
   const selectedCategories = useFilterStore((state) => state.categories);
@@ -20,10 +27,11 @@ const CategoriesFilter = () => {
     queryFn: fetchCategories,
   });
 
-  async function fetchCategories(): Promise<Category[]> {
-    const { data } = await axios.get('/api/categories');
-    return data;
-  }
+  useEffect(() => {
+    if (slug) {
+      setCategories([slug as string]);
+    }
+  }, [slug, setCategories]);
 
   const handleCategoryChange = (categorySlug: string) => {
     const updatedCategories = selectedCategories.includes(categorySlug)

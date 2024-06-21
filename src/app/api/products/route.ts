@@ -5,7 +5,7 @@ import { getProducts } from "@/utils/sanity";
 export const revalidate = 60;
 
 interface ProductFilterParams {
-  category: string[];
+  category: string[]; // Ensure 'categories' matches query parameter name
   minPrice?: number;
   maxPrice?: number;
 }
@@ -14,10 +14,11 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const params = {
-      category: url.searchParams.getAll('categories'), // Changed 'category' to 'categories'
+      category: url.searchParams.getAll('categories'), // Ensure 'categories' matches query parameter name
       minPrice: parseQueryParamToInt(url.searchParams.get('minPrice')),
       maxPrice: parseQueryParamToInt(url.searchParams.get('maxPrice')),
     };
+console.log(params);
 
     // Define a schema for validation
     const productFilterSchema = z.object({

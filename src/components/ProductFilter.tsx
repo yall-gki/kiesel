@@ -1,20 +1,36 @@
-"use client"
-
 // ProductFilter.tsx
 import React from 'react';
 import axios from 'axios';
+import useFilterStore from '../store/useFilterStore';
 import CategoriesFilter from './CategoriesFilter';
 import PriceFilter from './PriceFilter';
-import useFilterStore from '../store/useFilterStore';
+import useSWR from 'swr';
 
-const ProductFilter= () => {
+interface Category {
+  title: string;
+  slug: { current: string };
+}
+
+const fetchCategories = async (): Promise<Category[]> => {
+  const { data } = await axios.get('/api/categories');
+  return data;
+};
+
+const ProductFilter = () => {
   const categories = useFilterStore((state) => state.categories);
   const priceRange = useFilterStore((state) => state.priceRange);
   const setProducts = useFilterStore((state) => state.setProducts);
-  
+
+  // Using SWR to fetch categories
+  const { data: categoriesData, error: categoriesError } = useSWR<Category[], Error>(
+    '/api/categories',
+    fetchCategories
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(1);
+    
 
     const query = {
       categories: categories.join(','),
@@ -27,13 +43,16 @@ const ProductFilter= () => {
         params: query,
       });
       setProducts(response.data);
-      
+      console.log(response.data);
       
     } catch (error) {
       console.error('Error fetching products:', error);
       // Handle error
     }
   };
+
+  if (!categoriesData && !categoriesError) return <div>Loading...</div>;
+  if (categoriesError) return <div>Error fetching categories</div>;
 
   return (
     <div className="flex flex-col gap-4 w-1/6 lg:border-slate-300 items-center justify-start border-r-2 pt-4 px-6">
@@ -50,4 +69,4 @@ const ProductFilter= () => {
   );
 };
 
-export default ProductFilter
+export default ProductFilter;

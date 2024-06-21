@@ -25,10 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn("min-h-screen  bg-slate-50 antialiased",DosisF.className)}>
-     
         <Providers >
-        {" "}
-        <Navbar /> {authModal}{children}
+        {" "}      <Navbar />
+
+       {authModal}{children}
         </Providers >
       </body>
     </html>

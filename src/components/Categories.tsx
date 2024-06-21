@@ -17,7 +17,7 @@ const Categories: React.FC<IAppProps> = (props) => {
   const handleSubmit = async ( title: string ) => {
 
     const query = {
-      categories: title
+      categories: title.toLocaleLowerCase()
     };
 
     try {
@@ -51,7 +51,7 @@ const Categories: React.FC<IAppProps> = (props) => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [categories]);
 
   return (
     <div className="relative max-h-full overflow-y-hidden lg:w-1/2 bg-zinc-800 flex flex-col text-slate-50 justify-between h-full items-center w-full">
@@ -65,7 +65,11 @@ const Categories: React.FC<IAppProps> = (props) => {
           <div className="lg:p-8 p-5 w-full font-sans font-bold text-3xl lg:text-8xl">
             {item.title.toUpperCase()}
           </div>
-         < Link href={`/${item.slug.current}`} onClick={()=>handleSubmit(item.title)} >
+         < Link href={`/${item.slug.current}`} onClick={()=>{
+          handleSubmit(item.title)
+          
+         }
+         } >
           <div className="h-full lg:p-16 border-b-2 border-black text-slate-90 lg:text-zinc-800 lg:bg-zinc-50 flex justify-center items-center">
             <ArrowRight size={50}  />
           </div>

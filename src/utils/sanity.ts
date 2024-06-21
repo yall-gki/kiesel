@@ -19,20 +19,15 @@ interface ProductFilterParams {
   minPrice?: number;
   maxPrice?: number;
 }
-
-// Fetch products based on filter parameters
 export async function getProducts(params: ProductFilterParams) {
   const { category, minPrice, maxPrice } = params;
 
   try {
-    // Constructing GROQ query for products
-    let query = groq`*[_type == "product"`;
+    // Split the category string into an array if it contains commas
+    const categoriesArray = category.flatMap(cat => cat.split(','));
 
-    // Adding category filter
-    if (category.length > 0) {
-      const formattedCategories = category.map(cat => `"${cat}"`).join(', ');
-      query += ` && category._ref in *[_type == "category" && title in [${formattedCategories}]]._id`;
-    }
+    // Constructing GROQ query for products
+    let query = groq`*[_type == "product" && references(*[_type == "category" && (${categoriesArray.map(cat => `slug.current == "${cat.trim()}"`).join(' || ')})]._id)`;
 
     // Adding price range filter
     if (minPrice !== undefined) {
@@ -61,6 +56,5 @@ export async function getProducts(params: ProductFilterParams) {
     throw new Error('Failed to fetch products from Sanity: ' + error.message);
   }
 }
-
 export const revalidate = 60;
 export const dynamic = 'force-dynamic';

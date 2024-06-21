@@ -9,7 +9,8 @@ interface FilterState {
   setCategories: (categories: string[]) => void;
   setPriceRange: (priceRange: number[]) => void;
   setProducts: (products: Product[]) => void; // Setter for products
-  setSlug : (slug :string ) => void
+  setSlug : (slug :string ) => void,
+  clearFilters : ()=>void
 }
 
 interface Product {
@@ -29,7 +30,10 @@ const useFilterStore = create<FilterState>((set) => ({
   setCategories: (categories) => set({ categories }),
   setPriceRange: (priceRange) => set({ priceRange }),
   setProducts: (products) => set({ products }), // Setter function for products
-  setSlug : (slug :string ) => set({slug})
+  setSlug : (slug :string ) => set({slug}),
+
+  clearFilters: () => set({ categories: [], priceRange: [0, 1000] }),
+
 }));
 
 export default useFilterStore;
