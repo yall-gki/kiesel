@@ -7,25 +7,22 @@ import { useRouter } from 'next/navigation';
 import useFilterStore from '../store/useFilterStore';
 
 interface Category {
-  title: string;
-  slug: { current: string };
+  attributes : {
+
+    name: string;
+    slug:  string ;
+  }
 }
 
-const fetchCategories = async (): Promise<Category[]> => {
-  const { data } = await axios.get('/api/categories');
-  return data;
-};
-  
 
 const CategoriesFilter = () => {
   const selectedCategories = useFilterStore((state) => state.categories);
   const setCategories = useFilterStore((state) => state.setCategories);
+  const categories = useFilterStore((state) => state.categories);
   const slug = useFilterStore((state) => state.slug);
 
-  const { data: categories, isLoading, isError } = useQuery<Category[], Error>({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-  });
+  console.log(categories);
+  
 
   useEffect(() => {
     if (slug) {
@@ -40,22 +37,19 @@ const CategoriesFilter = () => {
     setCategories(updatedCategories);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching categories</div>;
-
   return (
     <div className="h-auto flex flex-col gap-2 text-slate-50 justify-between items-start">
-      {categories?.map((category, i) => (
+      {categories?.map((category : any, i) => (
         <div key={i} className="flex gap-4 justify-start items-center">
           <input
             className="h-4 w-full scale-150"
             type="checkbox"
             name="category"
-            value={category.slug.current}
-            checked={selectedCategories.map(c => c.toLowerCase()).includes(category.slug.current.toLowerCase())}
-            onChange={() => handleCategoryChange(category.slug.current.toLowerCase())}
+            value={category.attributes.slug.name}
+            
+            onChange={() => handleCategoryChange(category.attributes.slug.toLowerCase())}
           />
-          <span className="text-zinc-800 font-semibold">{category.title}</span>
+          <span className="text-zinc-800 font-semibold">{category.attributes.name}</span>
         </div>
       ))}
     </div>

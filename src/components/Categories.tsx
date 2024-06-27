@@ -9,21 +9,23 @@ import { Item } from '@radix-ui/react-dropdown-menu';
 interface IAppProps {}
 
 const Categories: React.FC<IAppProps> = (props) => {
-  const [categories, setCategories] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
+  const categories = useFilterStore((state) => state.categories)
   const setProducts = useFilterStore((state) => state.setProducts);
+  const setCategories = useFilterStore((state) => state.setCategories);
+
 
   const handleSubmit = async ( title: string ) => {
 
     const query = {
-      categories: title.toLocaleLowerCase()
+      categories: title
     };
 
     try {
       const response = await axios.get('/api/products', {
         params: query,
-      });
+      })
       setProducts(response.data);
       console.log(response.data);
       
@@ -39,8 +41,10 @@ const Categories: React.FC<IAppProps> = (props) => {
   const fetchCategories = async () => {
     setIsFetching(true);
     try {
-      const { data } = await axios.get('/api/categories');
+      const { data } = (await axios.get('/api/categories')).data;
       setCategories(data);
+      console.log(data);
+      
       setIsFetched(true);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -51,22 +55,22 @@ const Categories: React.FC<IAppProps> = (props) => {
 
   useEffect(() => {
     fetchCategories();
-  }, [categories]);
+  }, []);
 
   return (
     <div className="relative max-h-full overflow-y-hidden lg:w-1/2 bg-zinc-800 flex flex-col text-slate-50 justify-between h-full items-center w-full">
       {isFetching && <div>Loading...</div>}
-      {isFetched && categories.map((item: any, i) => (
+      {isFetched && categories?.map((item: any, i) => (
         <div
           key={i}
           className="flex items-center justify-between w-full hover:bg-zinc-700 transition duration-75 pointer-cursor"
           style={{ height: `calc(100% / ${categories.length})` }}
         >
           <div className="lg:p-8 p-5 w-full font-sans font-bold text-3xl lg:text-8xl">
-            {item.title.toUpperCase()}
+            {item.attributes.name.toUpperCase()}
           </div>
-         < Link href={`/${item.slug.current}`} onClick={()=>{
-          handleSubmit(item.title)
+         < Link href={`/${item.attributes.slug}`} onClick={()=>{
+          handleSubmit(item.attributes.name)
           
          }
          } >

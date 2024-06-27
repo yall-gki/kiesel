@@ -5,12 +5,14 @@ interface FilterState {
   categories: string[];
   priceRange: number[];
   products: Product[]; // Array to hold products
-  slug : string
+  slug : string,
+  inputValue :string,
   setCategories: (categories: string[]) => void;
   setPriceRange: (priceRange: number[]) => void;
   setProducts: (products: Product[]) => void; // Setter for products
   setSlug : (slug :string ) => void,
   clearFilters : ()=>void
+  setInputValue : (inputValue : string)=>void
 }
 
 interface Product {
@@ -27,12 +29,16 @@ const useFilterStore = create<FilterState>((set) => ({
   priceRange: [0, 1500],
   products: [], // Initialize products array
   slug : "",
+  inputValue :"" ,
+
   setCategories: (categories) => set({ categories }),
   setPriceRange: (priceRange) => set({ priceRange }),
   setProducts: (products) => set({ products }), // Setter function for products
   setSlug : (slug :string ) => set({slug}),
 
   clearFilters: () => set({ categories: [], priceRange: [0, 1000] }),
+  setInputValue : (inputValue) => set({ inputValue }),
+
 
 }));
 

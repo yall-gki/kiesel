@@ -19,17 +19,26 @@ interface ProductFilterParams {
   minPrice?: number;
   maxPrice?: number;
 }
+export async function getAllProducts(){
+
+  const products = await client.fetch(groq`*[_type == "prodyct"]{title, description}`);
+  return products;
+
+}
+
 export async function getProducts(params: ProductFilterParams) {
   const { category, minPrice, maxPrice } = params;
 
   try {
-    // Split the category string into an array if it contains commas
-    const categoriesArray = category.flatMap(cat => cat.split(','));
+    let query = groq`*[_type == "product"`;
 
-    // Constructing GROQ query for products
-    let query = groq`*[_type == "product" && references(*[_type == "category" && (${categoriesArray.map(cat => `slug.current == "${cat.trim()}"`).join(' || ')})]._id)`;
+    // Add category filter if provided
+    if (category.length > 0) {
+      const categoriesArray = category.flatMap(cat => cat.split(','));
+      query += ` && references(*[_type == "category" && (${categoriesArray.map(cat => `slug.current == "${cat.trim()}"`).join(' || ')})]._id)`;
+    }
 
-    // Adding price range filter
+    // Add price range filter if provided
     if (minPrice !== undefined) {
       query += ` && price >= ${minPrice}`;
     }
@@ -38,7 +47,9 @@ export async function getProducts(params: ProductFilterParams) {
       query += ` && price <= ${maxPrice}`;
     }
 
-    // Finalizing the query
+    // Add search query filter if provided
+    
+
     query += `]{
       price,
       category->{
@@ -49,7 +60,6 @@ export async function getProducts(params: ProductFilterParams) {
       name
     }`;
 
-    // Fetching products using Sanity client
     const products = await client.fetch(query);
     return products;
   } catch (error) {

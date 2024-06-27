@@ -5,6 +5,7 @@ import useFilterStore from '../store/useFilterStore';
 import CategoriesFilter from './CategoriesFilter';
 import PriceFilter from './PriceFilter';
 import useSWR from 'swr';
+import SearchInput from './SearchInput';
 
 interface Category {
   title: string;
@@ -19,6 +20,7 @@ const fetchCategories = async (): Promise<Category[]> => {
 const ProductFilter = () => {
   const categories = useFilterStore((state) => state.categories);
   const priceRange = useFilterStore((state) => state.priceRange);
+  const inputValue = useFilterStore((state) => state.inputValue)
   const setProducts = useFilterStore((state) => state.setProducts);
 
   // Using SWR to fetch categories
@@ -33,6 +35,7 @@ const ProductFilter = () => {
     
 
     const query = {
+      search : inputValue,
       categories: categories.join(','),
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
@@ -59,6 +62,7 @@ const ProductFilter = () => {
       <h2 className="text-2xl w-full font-semibold">FILTERS</h2>
       <hr className="w-full h-[2px] bg-slate-400 pr-8" />
       <form className="w-full lg:h-full flex flex-col items-start justify-start" onSubmit={handleSubmit}>
+        <SearchInput />
         <CategoriesFilter  />
         <PriceFilter />
         <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">
